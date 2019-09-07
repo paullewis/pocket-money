@@ -69,7 +69,12 @@ function hijackLinks() {
       return;
     }
 
+    // Okay, now handle the anchor.
     evt.preventDefault();
+    if (targetUrl.pathname === currentSectionPathName) {
+      return;
+    }
+
     history.pushState(undefined, '', targetUrl.toString());
     go();
   });

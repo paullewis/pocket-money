@@ -22,21 +22,17 @@
 
 import typescript2 from 'rollup-plugin-typescript2';
 import loadz0r from 'rollup-plugin-loadz0r';
-import copy from 'rollup-plugin-copy-glob';
 
 export default {
   input: ['src/bootstrap.ts'],
   output: {
     format: 'amd',
-    dir: 'dist/js'
+    dir: '_site/js'
   },
   plugins: [
     typescript2(),
     loadz0r({
       publicPath: '/js'
-    }),
-    copy([
-      { files: 'src/**/*.html', dest: 'dist' }
-    ])
+    })
   ]
 }

@@ -4,8 +4,8 @@
   "description": "Trackin' your pennies",
   "jsnext:main": "dist/thing.js",
   "scripts": {
-    "build": "rimraf dist && rollup -c",
-    "serve": "http-server dist -c0 -g",
+    "build": "rimraf _site && rollup -c && eleventy --input=./src",
+    "serve": "http-server _site -c0 -g",
     "test": "karma start"
   },
   "author": "Paul Lewis",
@@ -15,6 +15,7 @@
     "@types/mocha": "^5.2.6",
     "@webcomponents/webcomponentsjs": "^2.2.7",
     "chai": "^4.2.0",
+    "idb-keyval": "^3.2.0",
     "karma": "^4.3.0",
     "karma-chai": "^0.1.0",
     "karma-chrome-launcher": "^2.2.0",
@@ -28,5 +29,8 @@
     "rollup-plugin-typescript2": "^0.21.2",
     "tslint": "^5.12.1",
     "typescript": "^3.5.2"
+  },
+  "dependencies": {
+    "@11ty/eleventy": "^0.9.0"
   }
 }
