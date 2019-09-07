@@ -4,7 +4,7 @@
   "description": "Trackin' your pennies",
   "jsnext:main": "dist/thing.js",
   "scripts": {
-    "build": "rimraf dist && rollup -c && cp src/index.html dist",
+    "build": "rimraf dist && rollup -c",
     "serve": "http-server dist -c0 -g",
     "test": "karma start"
   },
@@ -15,17 +15,18 @@
     "@types/mocha": "^5.2.6",
     "@webcomponents/webcomponentsjs": "^2.2.7",
     "chai": "^4.2.0",
-    "karma": "^4.0.0",
+    "karma": "^4.3.0",
     "karma-chai": "^0.1.0",
     "karma-chrome-launcher": "^2.2.0",
     "karma-mocha": "^1.3.0",
     "karma-typescript": "^4.0.0",
-    "mocha": "^6.0.0",
+    "mocha": "^6.2.0",
     "rimraf": "^2.6.3",
     "rollup": "^1.16.3",
+    "rollup-plugin-copy-glob": "^0.3.1",
     "rollup-plugin-loadz0r": "^0.7.2",
     "rollup-plugin-typescript2": "^0.21.2",
     "tslint": "^5.12.1",
-    "typescript": "^3.3.3"
+    "typescript": "^3.5.2"
   }
 }

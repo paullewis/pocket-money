@@ -20,7 +20,33 @@
  * SOFTWARE.
  */
 
-export function clamp(value: number, min = Number.NEGATIVE_INFINITY,
-                      max = Number.POSITIVE_INFINITY) {
-  return Math.max(min, Math.min(max, value));
+import { fade } from './utils/fade.js';
+import { Section } from './utils/section.js';
+
+class Home implements Section {
+  private elSource!: HTMLElement;
+  private el!: HTMLElement;
+
+  async show(hostElement: HTMLElement) {
+    console.log('Home show');
+
+    this.el = this.elSource.cloneNode(true) as HTMLElement;
+    hostElement.innerHTML = '';
+    hostElement.appendChild(this.el);
+
+    return fade({ el: hostElement, from: 0, to: 1 });
+  }
+
+  async hide(hostElement: HTMLElement) {
+    console.log('Home hide');
+    return fade({ el: hostElement, from: 1, to: 0 });
+  }
+
+  adopt(elSource: HTMLElement) {
+    this.elSource = elSource;
+  }
 }
+
+customElements.define('pm-home', Home);
+
+export default new Home();

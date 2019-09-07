@@ -20,7 +20,38 @@
  * SOFTWARE.
  */
 
-export function clamp(value: number, min = Number.NEGATIVE_INFINITY,
-                      max = Number.POSITIVE_INFINITY) {
-  return Math.max(min, Math.min(max, value));
+import { clamp } from './clamp.js';
+
+function ease(value: number, pow = 3) {
+  return 1 - Math.pow(1 - value, pow);
+}
+
+const fades = new Map<HTMLElement, number>();
+export function fade({ el = document.body, from = 1, to = 0, duration = 300 }): Promise<void> {
+  return new Promise((resolve) => {
+    const existingAnimation = fades.get(el);
+    if (typeof existingAnimation !== 'undefined') {
+      from = existingAnimation;
+    }
+
+    const start = performance.now();
+    const update = () => {
+      const time = (performance.now() - start) / duration;
+      const position = ease(clamp(time, 0, 1));
+      const newOpacity = from + (to - from) * position;
+      el.style.opacity = String(newOpacity);
+
+      if (position === 1) {
+        resolve();
+        fades.delete(el);
+      } else {
+        requestAnimationFrame(update);
+        fades.set(el, newOpacity);
+      }
+    };
+
+    // Start the animation.
+    requestAnimationFrame(update);
+    fades.set(el, 0);
+  });
 }

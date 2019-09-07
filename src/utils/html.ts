@@ -20,7 +20,16 @@
  * SOFTWARE.
  */
 
-export function clamp(value: number, min = Number.NEGATIVE_INFINITY,
-                      max = Number.POSITIVE_INFINITY) {
-  return Math.max(min, Math.min(max, value));
+export async function getHtml(path: string): Promise<HTMLElement> {
+  const response = await fetch(path);
+  const text = await response.text();
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(text, 'text/html');
+  const main = doc.querySelector('main');
+  if (!main) {
+    throw new Error('Unable to find main');
+  }
+
+  document.adoptNode(main);
+  return main;
 }
