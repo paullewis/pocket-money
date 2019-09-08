@@ -1,4 +1,4 @@
-define("./settings-28811cff.js",['exports', './chunk-101f3e4a'], function (exports, __chunk_1) { 'use strict';
+define("./details-50a0a61e.js",['exports', './chunk-101f3e4a'], function (exports, __chunk_1) { 'use strict';
 
   /**
    * Copyright (c) 2019 Paul Lewis
@@ -21,25 +21,28 @@ define("./settings-28811cff.js",['exports', './chunk-101f3e4a'], function (expor
    * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
    * SOFTWARE.
    */
-  class Settings {
-      async show(hostElement) {
-          console.log('Settings show');
+  class Details {
+      async show(hostElement, routeData) {
+          console.log('Details show', routeData);
           this.el = this.elSource.cloneNode(true);
           hostElement.innerHTML = '';
           hostElement.appendChild(this.el);
+          if (routeData.data.name) {
+              document.querySelector('h1').textContent = routeData.data.name;
+          }
           return __chunk_1.fade({ el: hostElement, from: 0, to: 1 });
       }
       async hide(hostElement) {
-          console.log('Settings hide');
+          console.log('Details hide');
           return __chunk_1.fade({ el: hostElement, from: 1, to: 0 });
       }
       adopt(elSource) {
           this.elSource = elSource;
       }
   }
-  customElements.define('pm-settings', Settings);
-  var settings = new Settings();
+  customElements.define('pm-details', Details);
+  var details = new Details();
 
-  exports.default = settings;
+  exports.default = details;
 
 });

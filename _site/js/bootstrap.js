@@ -119,6 +119,64 @@ define("./bootstrap.js",['require'], function (require) { 'use strict';
       return main;
   }
 
+  const root = new Map();
+  function register(route) {
+      const parts = route.split('/');
+      let node = root;
+      for (const part of parts) {
+          if (part === '') {
+              continue;
+          }
+          let value = node.get(part);
+          if (!value) {
+              value = new Map();
+              node.set(part, value);
+          }
+          node = value;
+      }
+  }
+  function match(route) {
+      const data = {};
+      console.log('match route');
+      // Special-case the root.
+      if (route === '/') {
+          return { path: '/' };
+      }
+      let node = root;
+      const parts = route.split('/');
+      const path = [];
+      for (const part of parts) {
+          if (part === '') {
+              continue;
+          }
+          const value = node.get(part);
+          if (value) {
+              node = value;
+              data[part] = part;
+              path.push(part);
+          }
+          else {
+              // No absolute match - check for wildcards.
+              for (const key of node.keys()) {
+                  if (key.startsWith(':')) {
+                      data[key.substr(1)] = part;
+                      path.push(key);
+                      node = node.get(key);
+                      break;
+                  }
+              }
+          }
+      }
+      // No matches whatsoever.
+      if (Object.keys(data).length === 0) {
+          return null;
+      }
+      return {
+          data,
+          path: `/${path.join('/')}/`,
+      };
+  }
+
   /**
    * Copyright (c) 2019 Paul Lewis
    *
@@ -146,8 +204,15 @@ define("./bootstrap.js",['require'], function (require) { 'use strict';
   let currentSectionPathName;
   let currentSection;
   let blockSectionSwap = false;
-  function register(name, sectionLoader) {
-      routeLoaders.set(name, sectionLoader);
+  function register$1(route, sectionLoader) {
+      if (typeof route === 'string') {
+          route = [route];
+      }
+      for (const singleRoute of route) {
+          console.log(singleRoute);
+          register(singleRoute);
+          routeLoaders.set(singleRoute, sectionLoader);
+      }
   }
   async function init(host) {
       hostElement = host;
@@ -182,9 +247,14 @@ define("./bootstrap.js",['require'], function (require) { 'use strict';
       });
   }
   async function go(pathname = window.location.pathname) {
-      const section = routes.get(pathname);
+      const routeData = match(pathname);
+      console.log(routeData);
+      if (!routeData) {
+          throw new Error(`Unknown route: ${pathname}`);
+      }
+      const section = routes.get(routeData.path);
       if (!section) {
-          const loader = routeLoaders.get(pathname);
+          const loader = routeLoaders.get(routeData.path);
           if (!loader) {
               // 404.
               throw new Error(`Unknown route: ${pathname}`);
@@ -203,9 +273,9 @@ define("./bootstrap.js",['require'], function (require) { 'use strict';
           return;
       }
       currentSectionPathName = pathname;
-      animationSectionChange();
+      animationSectionChange(routeData);
   }
-  async function animationSectionChange() {
+  async function animationSectionChange(routeData) {
       if (blockSectionSwap) {
           return;
       }
@@ -220,7 +290,7 @@ define("./bootstrap.js",['require'], function (require) { 'use strict';
       }
       currentSection = section;
       blockSectionSwap = false;
-      await section.show(hostElement);
+      await section.show(hostElement, routeData);
   }
 
   /**
@@ -245,16 +315,22 @@ define("./bootstrap.js",['require'], function (require) { 'use strict';
    * SOFTWARE.
    */
   async function init$1() {
-      register('/', () => {
+      register$1('/', () => {
           return {
               element: getHtml('/index.html'),
-              section: new Promise(function (resolve, reject) { require(['./index-b2e15c53'], resolve, reject) }),
+              section: new Promise(function (resolve, reject) { require(['./index-682c4190'], resolve, reject) }),
           };
       });
-      register('/settings/', () => {
+      register$1('/settings/', () => {
           return {
               element: getHtml('/settings/index.html'),
-              section: new Promise(function (resolve, reject) { require(['./settings-28811cff'], resolve, reject) })
+              section: new Promise(function (resolve, reject) { require(['./settings-b63a23f3'], resolve, reject) })
+          };
+      });
+      register$1(['/details/', '/details/:name/'], () => {
+          return {
+              element: getHtml('/details/index.html'),
+              section: new Promise(function (resolve, reject) { require(['./details-50a0a61e'], resolve, reject) })
           };
       });
       const host = document.querySelector('main');

@@ -27,8 +27,8 @@ class Settings implements Section {
   private elSource!: HTMLElement;
   private el!: HTMLElement;
 
-  async show(hostElement: HTMLElement) {
-    console.log('Settings show');
+  async show(hostElement: HTMLElement, routeData: {}) {
+    console.log('Settings show', routeData);
 
     this.el = this.elSource.cloneNode(true) as HTMLElement;
     hostElement.innerHTML = '';

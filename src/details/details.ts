@@ -20,34 +20,43 @@
  * SOFTWARE.
  */
 
-import { getHtml as getHtmlElement } from './utils/html.js';
-import * as Router from './utils/router.js';
+import { fade } from '../utils/fade.js';
+import { Section } from '../utils/section.js';
 
-async function init() {
-  Router.register('/', () => {
-    return {
-      element: getHtmlElement('/index.html'),
-      section: import('./index.js'),
-    };
-  });
-  Router.register('/settings/', () => {
-    return {
-      element: getHtmlElement('/settings/index.html'),
-      section: import('./settings/settings.js')
-    };
-  });
-  Router.register(['/details/', '/details/:name/'], () => {
-    return {
-      element: getHtmlElement('/details/index.html'),
-      section: import('./details/details.js')
-    };
-  });
-
-  const host = document.querySelector('main');
-  if (!host) {
-    throw new Error('No <main>!');
-  }
-  await Router.init(host);
+interface RouteData {
+  data: {
+    name?: string
+  };
 }
 
-init();
+class Details implements Section {
+  private elSource!: HTMLElement;
+  private el!: HTMLElement;
+
+  async show(hostElement: HTMLElement, routeData: RouteData) {
+    console.log('Details show', routeData);
+
+    this.el = this.elSource.cloneNode(true) as HTMLElement;
+    hostElement.innerHTML = '';
+    hostElement.appendChild(this.el);
+
+    if (routeData.data.name) {
+      document.querySelector('h1')!.textContent = routeData.data.name;
+    }
+
+    return fade({ el: hostElement, from: 0, to: 1 });
+  }
+
+  async hide(hostElement: HTMLElement) {
+    console.log('Details hide');
+    return fade({ el: hostElement, from: 1, to: 0 });
+  }
+
+  adopt(elSource: HTMLElement) {
+    this.elSource = elSource;
+  }
+}
+
+customElements.define('pm-details', Details);
+
+export default new Details();

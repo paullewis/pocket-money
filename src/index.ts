@@ -27,8 +27,8 @@ class Home implements Section {
   private elSource!: HTMLElement;
   private el!: HTMLElement;
 
-  async show(hostElement: HTMLElement) {
-    console.log('Home show');
+  async show(hostElement: HTMLElement, routeData: {}) {
+    console.log('Home show', routeData);
 
     this.el = this.elSource.cloneNode(true) as HTMLElement;
     hostElement.innerHTML = '';

@@ -1,4 +1,4 @@
-define("./index-b2e15c53.js",['exports', './chunk-101f3e4a'], function (exports, __chunk_1) { 'use strict';
+define("./index-682c4190.js",['exports', './chunk-101f3e4a'], function (exports, __chunk_1) { 'use strict';
 
   /**
    * Copyright (c) 2019 Paul Lewis
@@ -22,8 +22,8 @@ define("./index-b2e15c53.js",['exports', './chunk-101f3e4a'], function (exports,
    * SOFTWARE.
    */
   class Home {
-      async show(hostElement) {
-          console.log('Home show');
+      async show(hostElement, routeData) {
+          console.log('Home show', routeData);
           this.el = this.elSource.cloneNode(true);
           hostElement.innerHTML = '';
           hostElement.appendChild(this.el);

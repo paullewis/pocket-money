@@ -20,6 +20,7 @@
  * SOFTWARE.
  */
 
+import * as RouteMatcher from './route-matcher.js';
 import { Section } from './section.js';
 
 interface DynamicSection {
@@ -37,8 +38,15 @@ let currentSectionPathName: string;
 let currentSection: Section;
 let blockSectionSwap = false;
 
-export function register(name: string, sectionLoader: () => DynamicSection) {
-  routeLoaders.set(name, sectionLoader);
+export function register(route: string | string[], sectionLoader: () => DynamicSection) {
+  if (typeof route === 'string') {
+    route = [route];
+  }
+
+  for (const singleRoute of route) {
+    RouteMatcher.register(singleRoute);
+    routeLoaders.set(singleRoute, sectionLoader);
+  }
 }
 
 export async function init(host: HTMLElement) {
@@ -81,9 +89,14 @@ function hijackLinks() {
 }
 
 async function go(pathname = window.location.pathname) {
-  const section = routes.get(pathname);
+  const routeData = RouteMatcher.match(pathname);
+  if (!routeData) {
+    throw new Error(`Unknown route: ${pathname}`);
+  }
+
+  const section = routes.get(routeData.path);
   if (!section) {
-    const loader = routeLoaders.get(pathname);
+    const loader = routeLoaders.get(routeData.path);
     if (!loader) {
       // 404.
       throw new Error(`Unknown route: ${pathname}`);
@@ -106,10 +119,10 @@ async function go(pathname = window.location.pathname) {
   }
 
   currentSectionPathName = pathname;
-  animationSectionChange();
+  animationSectionChange(routeData);
 }
 
-async function animationSectionChange() {
+async function animationSectionChange(routeData: {}) {
   if (blockSectionSwap) {
     return;
   }
@@ -126,5 +139,5 @@ async function animationSectionChange() {
   }
   currentSection = section;
   blockSectionSwap = false;
-  await section.show(hostElement);
+  await section.show(hostElement, routeData);
 }

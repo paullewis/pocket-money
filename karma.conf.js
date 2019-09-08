@@ -24,11 +24,11 @@ module.exports = function(config) {
   config.set({
     frameworks: ['karma-typescript', 'mocha', 'chai'],
     files: [
-      "node_modules/@webcomponents/webcomponentsjs/custom-elements-es5-adapter.js",
-      { pattern: "src/**/*.ts", include: true }
+      'node_modules/@webcomponents/webcomponentsjs/custom-elements-es5-adapter.js',
+      { pattern: 'src/**/*.ts', include: true }
     ],
     preprocessors: {
-      "**/*.ts": "karma-typescript"
+      '**/*.ts': 'karma-typescript'
     },
     plugins: [
       'karma-typescript',
@@ -36,20 +36,17 @@ module.exports = function(config) {
       'karma-mocha',
       'karma-chai'
     ],
-    reporters: ['progress', 'karma-typescript'],
+    reporters: ['progress'],
     karmaTypescriptConfig: {
       compilerOptions: {
-        target: "es5",
+        target: 'es5',
+        esModuleInterop: true,
+        downlevelIteration: true
       },
       exclude: [
         'node_modules',
         '*_test.ts'
-      ],
-      coverageOptions: {
-        exclude: [
-          /_test\.ts$/
-        ]
-      }
+      ]
     },
     browsers: ['ChromeHeadless'],
     singleRun: true

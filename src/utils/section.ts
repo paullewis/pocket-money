@@ -21,7 +21,7 @@
  */
 
 export interface Section {
-  show(hostElement: HTMLElement): Promise<void>;
+  show(hostElement: HTMLElement, routeData: {}): Promise<void>;
   hide(hostElement: HTMLElement): Promise<void>;
   adopt(element: HTMLElement): void;
 }
