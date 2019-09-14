@@ -23,32 +23,53 @@
 import { clamp } from './clamp.js';
 import { ease } from './ease.js';
 
-const fades = new Map<HTMLElement, number>();
-export function fade({ el = document.body, from = 1, to = 0, duration = 300 }): Promise<void> {
+interface Position {
+  h: number;
+  w: number;
+  x: number;
+  y: number;
+}
+const defaultPos: Position = {
+  h: 1,
+  w: 1,
+  x: 0,
+  y: 0,
+};
+const moves = new Map<HTMLElement, Position>();
+export function move({ el = document.body, from = defaultPos, to = defaultPos, duration = 300 }): Promise<void> {
   return new Promise((resolve) => {
-    const existingAnimation = fades.get(el);
+    const existingAnimation = moves.get(el);
     if (typeof existingAnimation !== 'undefined') {
       from = existingAnimation;
     }
+
+    // Prep the element for animation.
+    el.style.backfaceVisibility = 'hidden';
+    el.style.transformOrigin = 'top left';
 
     const start = performance.now();
     const update = () => {
       const time = (performance.now() - start) / duration;
       const position = ease(clamp(time, 0, 1));
-      const newOpacity = from + (to - from) * position;
-      el.style.opacity = String(newOpacity);
+      const x = from.x + (to.x - from.x) * position;
+      const y = from.y + (to.y - from.y) * position;
+      const w = from.w + (to.w - from.w) * position;
+      const h = from.h + (to.h - from.h) * position;
+
+      el.style.transform = `translate(${x}px, ${y}px) scale(${w}, ${h})`;
 
       if (position === 1) {
         resolve();
-        fades.delete(el);
+        moves.delete(el);
+        el.style.backfaceVisibility = 'visible';
       } else {
         requestAnimationFrame(update);
-        fades.set(el, newOpacity);
+        moves.set(el, { x, y, w, h });
       }
     };
 
     // Start the animation.
     requestAnimationFrame(update);
-    fades.set(el, 0);
+    moves.set(el, {x: 0, y: 0, w: 1, h: 1});
   });
 }

@@ -112,11 +112,15 @@ define("./bootstrap.js",['require'], function (require) { 'use strict';
       const parser = new DOMParser();
       const doc = parser.parseFromString(text, 'text/html');
       const main = doc.querySelector('main');
+      const style = doc.querySelector('style[data-injected="true"]') || undefined;
       if (!main) {
           throw new Error('Unable to find main');
       }
       document.adoptNode(main);
-      return main;
+      if (style) {
+          document.adoptNode(style);
+      }
+      return { main, style };
   }
 
   const root = new Map();
@@ -137,7 +141,6 @@ define("./bootstrap.js",['require'], function (require) { 'use strict';
   }
   function match(route) {
       const data = {};
-      console.log('match route');
       // Special-case the root.
       if (route === '/') {
           return { path: '/' };
@@ -209,7 +212,6 @@ define("./bootstrap.js",['require'], function (require) { 'use strict';
           route = [route];
       }
       for (const singleRoute of route) {
-          console.log(singleRoute);
           register(singleRoute);
           routeLoaders.set(singleRoute, sectionLoader);
       }
@@ -248,7 +250,6 @@ define("./bootstrap.js",['require'], function (require) { 'use strict';
   }
   async function go(pathname = window.location.pathname) {
       const routeData = match(pathname);
-      console.log(routeData);
       if (!routeData) {
           throw new Error(`Unknown route: ${pathname}`);
       }
@@ -261,12 +262,12 @@ define("./bootstrap.js",['require'], function (require) { 'use strict';
           }
           // Load and store the section.
           const sectionToLoad = loader();
-          const [loadedSection, element] = await Promise.all([
+          const [loadedSection, elements] = await Promise.all([
               sectionToLoad.section,
-              sectionToLoad.element
+              sectionToLoad.elements
           ]);
           // Store it for next time.
-          loadedSection.default.adopt(element);
+          loadedSection.default.adopt(elements);
           routes.set(pathname, loadedSection.default);
       }
       if (pathname === currentSectionPathName) {
@@ -281,6 +282,16 @@ define("./bootstrap.js",['require'], function (require) { 'use strict';
       }
       // Block multiple calls.
       blockSectionSwap = true;
+      // Before starting the hide of any current section, check with the
+      // incoming section if there is any beforeShow to execute.
+      const potentialNewSection = routes.get(currentSectionPathName);
+      if (!potentialNewSection) {
+          throw new Error(`Failure to load section: ${currentSectionPathName}`);
+      }
+      if (potentialNewSection.beforeShow) {
+          await potentialNewSection.beforeShow(hostElement, routeData);
+      }
+      // Now hide the current section.
       if (currentSection) {
           await currentSection.hide(hostElement);
       }
@@ -317,20 +328,20 @@ define("./bootstrap.js",['require'], function (require) { 'use strict';
   async function init$1() {
       register$1('/', () => {
           return {
-              element: getHtml('/index.html'),
-              section: new Promise(function (resolve, reject) { require(['./index-682c4190'], resolve, reject) }),
+              elements: getHtml('/index.html'),
+              section: new Promise(function (resolve, reject) { require(['./index-9f77a641'], resolve, reject) }),
           };
       });
       register$1('/settings/', () => {
           return {
-              element: getHtml('/settings/index.html'),
-              section: new Promise(function (resolve, reject) { require(['./settings-b63a23f3'], resolve, reject) })
+              elements: getHtml('/settings/index.html'),
+              section: new Promise(function (resolve, reject) { require(['./settings-b64eabf0'], resolve, reject) })
           };
       });
       register$1(['/details/', '/details/:name/'], () => {
           return {
-              element: getHtml('/details/index.html'),
-              section: new Promise(function (resolve, reject) { require(['./details-50a0a61e'], resolve, reject) })
+              elements: getHtml('/details/index.html'),
+              section: new Promise(function (resolve, reject) { require(['./details-b93a9da5'], resolve, reject) })
           };
       });
       const host = document.querySelector('main');

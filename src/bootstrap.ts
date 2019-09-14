@@ -20,25 +20,25 @@
  * SOFTWARE.
  */
 
-import { getHtml as getHtmlElement } from './utils/html.js';
+import { getHtml as getHtmlElements } from './utils/html.js';
 import * as Router from './utils/router.js';
 
 async function init() {
   Router.register('/', () => {
     return {
-      element: getHtmlElement('/index.html'),
+      elements: getHtmlElements('/index.html'),
       section: import('./index.js'),
     };
   });
   Router.register('/settings/', () => {
     return {
-      element: getHtmlElement('/settings/index.html'),
+      elements: getHtmlElements('/settings/index.html'),
       section: import('./settings/settings.js')
     };
   });
   Router.register(['/details/', '/details/:name/'], () => {
     return {
-      element: getHtmlElement('/details/index.html'),
+      elements: getHtmlElements('/details/index.html'),
       section: import('./details/details.js')
     };
   });

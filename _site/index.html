@@ -27,6 +27,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>Document</title>
+  <style>
+ html, body {
+   font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+ }
+</style>
+
+  <style data-injected="true">
+    img {
+      border-radius: 50%;
+    }
+  </style>
 </head>
 <body>
   <nav>
@@ -34,11 +45,14 @@
   <a href="/settings/">Settings</a>
   <a href="/details/jack/">Jack</a>
   <a href="/details/naomi/">Naomi</a>
+  <a href="/details/james/">James</a>
 </nav>
 
 
   <main>
     <h1>Home</h1>
+
+    <img class="avatar" data-name="james" src="/static/images/person.jpg" width="300" height="300">
   </main>
 
   <script src="/js/bootstrap.js"></script>

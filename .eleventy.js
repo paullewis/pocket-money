@@ -20,10 +20,6 @@
  * SOFTWARE.
  */
 
-import { SectionElement } from './utils/section.js';
-
-class Home extends SectionElement {}
-
-customElements.define('pm-home', Home);
-
-export default new Home();
+module.exports = function(eleventyConfig) {
+  eleventyConfig.addPassthroughCopy("src/static");
+}

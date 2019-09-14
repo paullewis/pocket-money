@@ -20,8 +20,50 @@
  * SOFTWARE.
  */
 
+import { fade } from '../utils/fade.js';
+
 export interface Section {
+  beforeShow?(hostElement: HTMLElement, routeData: {}): Promise<void>;
   show(hostElement: HTMLElement, routeData: {}): Promise<void>;
   hide(hostElement: HTMLElement): Promise<void>;
-  adopt(element: HTMLElement): void;
+  adopt(sources: { main: HTMLElement, style?: Element }): void;
+}
+
+const duration = 300;
+
+export abstract class SectionElement extends HTMLElement implements Section {
+  protected mainSource!: HTMLElement;
+  protected styleSource?: Element;
+
+  async show(hostElement: HTMLElement, routeData: {}) {
+    if (!this.mainSource) {
+      throw new Error('Unable to show section, no source element provided');
+    }
+
+    const el = this.mainSource.cloneNode(true) as HTMLElement;
+    hostElement.innerHTML = '';
+    hostElement.appendChild(el);
+
+    if (this.styleSource) {
+      const style = this.styleSource.cloneNode(true) as HTMLElement;
+      style.dataset.injected = 'true';
+      document.head.appendChild(style);
+    }
+
+    return fade({ el: hostElement, from: 0, to: 1, duration });
+  }
+
+  async hide(hostElement: HTMLElement) {
+    await fade({ el: hostElement, from: 1, to: 0, duration });
+
+    const injectedStyles = document.head.querySelectorAll('style[data-injected="true"]');
+    for (const style of injectedStyles) {
+      style.remove();
+    }
+  }
+
+  adopt({ main, style }: { main: HTMLElement, style: Element }) {
+    this.mainSource = main;
+    this.styleSource = style;
+  }
 }

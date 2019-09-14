@@ -20,10 +20,6 @@
  * SOFTWARE.
  */
 
-import { SectionElement } from './utils/section.js';
-
-class Home extends SectionElement {}
-
-customElements.define('pm-home', Home);
-
-export default new Home();
+export function ease(value: number, pow = 3) {
+  return 1 - Math.pow(1 - value, pow);
+}

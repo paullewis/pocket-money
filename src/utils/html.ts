@@ -20,16 +20,22 @@
  * SOFTWARE.
  */
 
-export async function getHtml(path: string): Promise<HTMLElement> {
+export async function getHtml(path: string): Promise<{ main: HTMLElement, style?: Element}> {
   const response = await fetch(path);
   const text = await response.text();
   const parser = new DOMParser();
   const doc = parser.parseFromString(text, 'text/html');
   const main = doc.querySelector('main');
+  const style = doc.querySelector('style[data-injected="true"]') || undefined;
   if (!main) {
     throw new Error('Unable to find main');
   }
 
   document.adoptNode(main);
-  return main;
+
+  if (style) {
+    document.adoptNode(style);
+  }
+
+  return { main, style };
 }

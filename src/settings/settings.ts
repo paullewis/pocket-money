@@ -20,32 +20,9 @@
  * SOFTWARE.
  */
 
-import { fade } from '../utils/fade.js';
-import { Section } from '../utils/section.js';
+import { SectionElement } from '../utils/section.js';
 
-class Settings implements Section {
-  private elSource!: HTMLElement;
-  private el!: HTMLElement;
-
-  async show(hostElement: HTMLElement, routeData: {}) {
-    console.log('Settings show', routeData);
-
-    this.el = this.elSource.cloneNode(true) as HTMLElement;
-    hostElement.innerHTML = '';
-    hostElement.appendChild(this.el);
-
-    return fade({ el: hostElement, from: 0, to: 1 });
-  }
-
-  async hide(hostElement: HTMLElement) {
-    console.log('Settings hide');
-    return fade({ el: hostElement, from: 1, to: 0 });
-  }
-
-  adopt(elSource: HTMLElement) {
-    this.elSource = elSource;
-  }
-}
+class Settings extends SectionElement {}
 
 customElements.define('pm-settings', Settings);
 

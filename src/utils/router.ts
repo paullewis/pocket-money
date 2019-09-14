@@ -27,7 +27,7 @@ interface DynamicSection {
   section: Promise<{
     default: Section
   }>;
-  element: Promise<HTMLElement>;
+  elements: Promise<{ main: HTMLElement, style?: Element }>;
 }
 
 const routes = new Map<string, Section>();
@@ -104,13 +104,13 @@ async function go(pathname = window.location.pathname) {
 
     // Load and store the section.
     const sectionToLoad = loader();
-    const [loadedSection, element] = await Promise.all([
+    const [loadedSection, elements] = await Promise.all([
       sectionToLoad.section,
-      sectionToLoad.element
+      sectionToLoad.elements
     ]);
 
     // Store it for next time.
-    loadedSection.default.adopt(element);
+    loadedSection.default.adopt(elements);
     routes.set(pathname, loadedSection.default);
   }
 
@@ -129,6 +129,19 @@ async function animationSectionChange(routeData: {}) {
 
   // Block multiple calls.
   blockSectionSwap = true;
+
+  // Before starting the hide of any current section, check with the
+  // incoming section if there is any beforeShow to execute.
+  const potentialNewSection = routes.get(currentSectionPathName);
+  if (!potentialNewSection) {
+    throw new Error(`Failure to load section: ${currentSectionPathName}`);
+  }
+
+  if (potentialNewSection.beforeShow) {
+    await potentialNewSection.beforeShow(hostElement, routeData);
+  }
+
+  // Now hide the current section.
   if (currentSection) {
     await currentSection.hide(hostElement);
   }
