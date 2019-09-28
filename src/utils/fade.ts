@@ -28,7 +28,7 @@ const cancels = new WeakMap<HTMLElement, number>();
 export function fade({ el = document.body, from = 1, to = 0, duration = 3000 }): Promise<void> {
   return new Promise((resolve) => {
     const cancelValue = cancels.get(el);
-    if (cancelValue) {
+    if (typeof cancelValue !== 'undefined') {
       el.style.opacity = cancelValue.toString();
       cancels.delete(el);
       fades.delete(el);
@@ -58,11 +58,14 @@ export function fade({ el = document.body, from = 1, to = 0, duration = 3000 }):
     };
 
     // Start the animation.
+    fades.set(el, from);
     requestAnimationFrame(update);
-    fades.set(el, 0);
   });
 }
 
-export function cancel(el: HTMLElement, value: number) {
-  cancels.set(el, value);
+export function cancelFade({ el = document.body, opacity = Number.NaN }) {
+  if (Number.isNaN(opacity)) {
+    opacity = Number(window.getComputedStyle(el).opacity || '0');
+  }
+  cancels.set(el, opacity);
 }

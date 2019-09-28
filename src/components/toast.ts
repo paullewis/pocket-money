@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-import { cancel, fade } from '../utils/fade.js';
+import { cancelFade, fade } from '../utils/fade.js';
 
 let toastInstance: Toast | undefined;
 
@@ -60,7 +60,7 @@ export class Toast extends HTMLElement {
   }
 
   resetFadeTimeout() {
-    cancel(this, 1);
+    cancelFade({ el: this, opacity: 1 });
     clearTimeout(this.fadeIdx);
     this.fadeIdx = setTimeout(() => fade({ el: this }), 1000) as unknown as number;
   }
