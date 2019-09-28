@@ -19,44 +19,29 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import { Toast } from './components/toast.js';
-import { getHtml as getHtmlElements } from './utils/html.js';
-import * as Router from './utils/router.js';
 
-async function init() {
-  Router.register('/', () => {
-    return {
-      elements: getHtmlElements('/index.html'),
-      section: import('./index.js'),
-    };
-  });
-  Router.register('/settings/', () => {
-    return {
-      elements: getHtmlElements('/settings/index.html'),
-      section: import('./settings/settings.js')
-    };
-  });
-  Router.register(['/details/', '/details/:name/'], () => {
-    return {
-      elements: getHtmlElements('/details/index.html'),
-      section: import('./details/details.js')
-    };
-  });
-  Router.register(['/child-management/', '/child-management/:id/'], () => {
-    return {
-      elements: getHtmlElements('/child-management/index.html'),
-      section: import('./child-management/child-management.js')
-    };
-  });
+import { id } from '../utils/id.js';
+import { SectionElement } from '../utils/section.js';
 
-  // Components.
-  customElements.define('pm-toast', Toast);
-
-  const host = document.querySelector('main');
-  if (!host) {
-    throw new Error('No <main>!');
-  }
-  await Router.init(host);
+interface RouteData {
+  data: {
+    id: string;
+  };
 }
 
-init();
+class ChildManagement extends SectionElement {
+  async show(hostElement: HTMLElement, routeData: RouteData) {
+    const show = super.show(hostElement, routeData);
+
+    const childId = this.root.querySelector('#child-id') as HTMLInputElement;
+    if (!childId.value) {
+      childId.value = routeData.data.id || id();
+    }
+
+    return show;
+  }
+}
+
+customElements.define('pm-child', ChildManagement);
+
+export default new ChildManagement();

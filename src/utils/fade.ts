@@ -24,8 +24,18 @@ import { clamp } from './clamp.js';
 import { ease } from './ease.js';
 
 const fades = new Map<HTMLElement, number>();
-export function fade({ el = document.body, from = 1, to = 0, duration = 300 }): Promise<void> {
+const cancels = new WeakMap<HTMLElement, number>();
+export function fade({ el = document.body, from = 1, to = 0, duration = 3000 }): Promise<void> {
   return new Promise((resolve) => {
+    const cancelValue = cancels.get(el);
+    if (cancelValue) {
+      el.style.opacity = cancelValue.toString();
+      cancels.delete(el);
+      fades.delete(el);
+      resolve();
+      return;
+    }
+
     const existingAnimation = fades.get(el);
     if (typeof existingAnimation !== 'undefined') {
       from = existingAnimation;
@@ -51,4 +61,8 @@ export function fade({ el = document.body, from = 1, to = 0, duration = 300 }): 
     requestAnimationFrame(update);
     fades.set(el, 0);
   });
+}
+
+export function cancel(el: HTMLElement, value: number) {
+  cancels.set(el, value);
 }

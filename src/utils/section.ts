@@ -34,6 +34,7 @@ const duration = 300;
 export abstract class SectionElement extends HTMLElement implements Section {
   protected mainSource!: HTMLElement;
   protected styleSource?: Element;
+  protected root = this.attachShadow({ mode: 'open' });
 
   async show(hostElement: HTMLElement, routeData: {}) {
     if (!this.mainSource) {
@@ -41,13 +42,15 @@ export abstract class SectionElement extends HTMLElement implements Section {
     }
 
     const el = this.mainSource.cloneNode(true) as HTMLElement;
+    this.root.innerHTML = '';
+    this.root.appendChild(el);
     hostElement.innerHTML = '';
-    hostElement.appendChild(el);
+    hostElement.appendChild(this);
 
     if (this.styleSource) {
       const style = this.styleSource.cloneNode(true) as HTMLElement;
       style.dataset.injected = 'true';
-      document.head.appendChild(style);
+      this.root.appendChild(style);
     }
 
     return fade({ el: hostElement, from: 0, to: 1, duration });
@@ -56,7 +59,7 @@ export abstract class SectionElement extends HTMLElement implements Section {
   async hide(hostElement: HTMLElement) {
     await fade({ el: hostElement, from: 1, to: 0, duration });
 
-    const injectedStyles = document.head.querySelectorAll('style[data-injected="true"]');
+    const injectedStyles = this.root.querySelectorAll('style[data-injected="true"]');
     for (const style of injectedStyles) {
       style.remove();
     }

@@ -1,4 +1,4 @@
-define("./settings-b64eabf0.js",['exports', './chunk-0329137a'], function (exports, __chunk_1) { 'use strict';
+define("./settings-917d52b8.js",['exports', './chunk-f605c39c', './chunk-e19a07e8'], function (exports, __chunk_1, __chunk_2) { 'use strict';
 
 	/**
 	 * Copyright (c) 2019 Paul Lewis
@@ -21,7 +21,7 @@ define("./settings-b64eabf0.js",['exports', './chunk-0329137a'], function (expor
 	 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 	 * SOFTWARE.
 	 */
-	class Settings extends __chunk_1.SectionElement {
+	class Settings extends __chunk_2.SectionElement {
 	}
 	customElements.define('pm-settings', Settings);
 	var settings = new Settings();

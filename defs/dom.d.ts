@@ -36,3 +36,7 @@ declare namespace Intl {
       (locales?: string | string[], options?: DateTimeFormatOptions): RelativeTimeFormat;
   };
 }
+
+interface Event {
+  path: HTMLElement[];
+}

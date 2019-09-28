@@ -40,7 +40,12 @@ class Details extends SectionElement {
       return;
     }
 
-    const element = hostElement.querySelector(`[data-name="${name}"]`);
+    const home = hostElement.querySelector('pm-home') as HTMLElement;
+    if (!home) {
+      return;
+    }
+
+    const element = home.shadowRoot!.querySelector(`[data-name="${name}"]`);
     if (!element) {
       return;
     }
@@ -59,10 +64,14 @@ class Details extends SectionElement {
     const show = super.show(hostElement, routeData);
 
     if (routeData.data.name) {
-      document.querySelector('h1')!.textContent = routeData.data.name;
+      this.root.querySelector('h1')!.textContent = routeData.data.name;
     }
 
-    const avatar = document.querySelector('img')!;
+    const avatar = this.root.querySelector('img');
+    if (!avatar) {
+      return;
+    }
+
     avatar.src = '/static/images/person.jpg';
 
     if (this.avatarCopy) {
@@ -80,18 +89,16 @@ class Details extends SectionElement {
       avatar.style.display = 'block';
     }
 
-    return await show;
+    return show;
   }
 
   async hide(hostElement: HTMLElement) {
-    const hide = super.hide(hostElement);
-
     if (this.avatarCopy) {
       await fade({ el: this.avatarCopy, to: 0, duration: 200 });
       this.removeAvatarCopy();
     }
 
-    return await hide;
+    return super.hide(hostElement);
   }
 
   private removeAvatarCopy() {

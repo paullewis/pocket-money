@@ -19,44 +19,49 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import { Toast } from './components/toast.js';
-import { getHtml as getHtmlElements } from './utils/html.js';
-import * as Router from './utils/router.js';
 
-async function init() {
-  Router.register('/', () => {
-    return {
-      elements: getHtmlElements('/index.html'),
-      section: import('./index.js'),
-    };
-  });
-  Router.register('/settings/', () => {
-    return {
-      elements: getHtmlElements('/settings/index.html'),
-      section: import('./settings/settings.js')
-    };
-  });
-  Router.register(['/details/', '/details/:name/'], () => {
-    return {
-      elements: getHtmlElements('/details/index.html'),
-      section: import('./details/details.js')
-    };
-  });
-  Router.register(['/child-management/', '/child-management/:id/'], () => {
-    return {
-      elements: getHtmlElements('/child-management/index.html'),
-      section: import('./child-management/child-management.js')
-    };
-  });
+import { cancel, fade } from '../utils/fade.js';
 
-  // Components.
-  customElements.define('pm-toast', Toast);
+let toastInstance: Toast | undefined;
 
-  const host = document.querySelector('main');
-  if (!host) {
-    throw new Error('No <main>!');
+export class Toast extends HTMLElement {
+  static create(message: string) {
+    if (!toastInstance) {
+      toastInstance = new Toast();
+    } else {
+      toastInstance.resetFadeTimeout();
+    }
+
+    toastInstance.textContent = message;
   }
-  await Router.init(host);
-}
 
-init();
+  private readonly root = this.attachShadow({mode: 'open'});
+  private fadeIdx = -1;
+
+  constructor() {
+    super();
+
+    this.root.innerHTML = `
+      <style>
+        #slotted-value {
+          padding: 9px;
+          color: #FFF;
+          background: #444;
+          box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
+          border-radius: 3px;
+        }
+      </style>
+      <div id="slotted-value">
+        <slot></slot>
+      </div>
+    `;
+
+    this.resetFadeTimeout();
+  }
+
+  resetFadeTimeout() {
+    cancel(this, 1);
+    clearTimeout(this.fadeIdx);
+    this.fadeIdx = setTimeout(() => fade({ el: this }), 1000) as unknown as number;
+  }
+}

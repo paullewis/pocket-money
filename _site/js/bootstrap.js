@@ -83,7 +83,66 @@ if (!self.define) {
     });
   };
 }
-define("./bootstrap.js",['require'], function (require) { 'use strict';
+define("./bootstrap.js",['require', './chunk-f605c39c'], function (require, __chunk_1) { 'use strict';
+
+  /**
+   * Copyright (c) 2019 Paul Lewis
+   *
+   * Permission is hereby granted, free of charge, to any person obtaining a copy
+   * of this software and associated documentation files (the "Software"), to deal
+   * in the Software without restriction, including without limitation the rights
+   * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+   * copies of the Software, and to permit persons to whom the Software is
+   * furnished to do so, subject to the following conditions:
+   *
+   * The above copyright notice and this permission notice shall be included in all
+   * copies or substantial portions of the Software.
+   *
+   * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+   * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+   * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+   * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+   * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+   * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+   * SOFTWARE.
+   */
+  let toastInstance;
+  class Toast extends HTMLElement {
+      constructor() {
+          super();
+          this.root = this.attachShadow({ mode: 'open' });
+          this.fadeIdx = -1;
+          this.root.innerHTML = `
+      <style>
+        #slotted-value {
+          padding: 9px;
+          color: #FFF;
+          background: #444;
+          box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
+          border-radius: 3px;
+        }
+      </style>
+      <div id="slotted-value">
+        <slot></slot>
+      </div>
+    `;
+          this.resetFadeTimeout();
+      }
+      static create(message) {
+          if (!toastInstance) {
+              toastInstance = new Toast();
+          }
+          else {
+              toastInstance.resetFadeTimeout();
+          }
+          toastInstance.textContent = message;
+      }
+      resetFadeTimeout() {
+          __chunk_1.cancel(this, 1);
+          clearTimeout(this.fadeIdx);
+          this.fadeIdx = setTimeout(() => __chunk_1.fade({ el: this }), 1000);
+      }
+  }
 
   /**
    * Copyright (c) 2019 Paul Lewis
@@ -224,7 +283,7 @@ define("./bootstrap.js",['require'], function (require) { 'use strict';
   }
   function hijackLinks() {
       document.body.addEventListener('click', (evt) => {
-          const target = evt.target;
+          const target = evt.path[0];
           // 1. Is an anchor.
           if (target.tagName !== 'A') {
               return;
@@ -329,21 +388,29 @@ define("./bootstrap.js",['require'], function (require) { 'use strict';
       register$1('/', () => {
           return {
               elements: getHtml('/index.html'),
-              section: new Promise(function (resolve, reject) { require(['./index-9f77a641'], resolve, reject) }),
+              section: new Promise(function (resolve, reject) { require(['./index-486fad94'], resolve, reject) }),
           };
       });
       register$1('/settings/', () => {
           return {
               elements: getHtml('/settings/index.html'),
-              section: new Promise(function (resolve, reject) { require(['./settings-b64eabf0'], resolve, reject) })
+              section: new Promise(function (resolve, reject) { require(['./settings-917d52b8'], resolve, reject) })
           };
       });
       register$1(['/details/', '/details/:name/'], () => {
           return {
               elements: getHtml('/details/index.html'),
-              section: new Promise(function (resolve, reject) { require(['./details-b93a9da5'], resolve, reject) })
+              section: new Promise(function (resolve, reject) { require(['./details-c8a72600'], resolve, reject) })
           };
       });
+      register$1(['/child-management/', '/child-management/:id/'], () => {
+          return {
+              elements: getHtml('/child-management/index.html'),
+              section: new Promise(function (resolve, reject) { require(['./child-management-a5ceb252'], resolve, reject) })
+          };
+      });
+      // Components.
+      customElements.define('pm-toast', Toast);
       const host = document.querySelector('main');
       if (!host) {
           throw new Error('No <main>!');

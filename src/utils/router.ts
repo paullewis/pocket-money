@@ -58,7 +58,7 @@ export async function init(host: HTMLElement) {
 
 function hijackLinks() {
   document.body.addEventListener('click', (evt) => {
-    const target = evt.target as HTMLElement;
+    const target = evt.path[0] as HTMLElement;
 
     // 1. Is an anchor.
     if (target.tagName !== 'A') {

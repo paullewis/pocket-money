@@ -1,4 +1,4 @@
-define("./details-b93a9da5.js",['exports', './chunk-0329137a'], function (exports, __chunk_1) { 'use strict';
+define("./details-c8a72600.js",['exports', './chunk-f605c39c', './chunk-e19a07e8'], function (exports, __chunk_1, __chunk_2) { 'use strict';
 
   /**
    * Copyright (c) 2019 Paul Lewis
@@ -83,13 +83,17 @@ define("./details-b93a9da5.js",['exports', './chunk-0329137a'], function (export
    * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
    * SOFTWARE.
    */
-  class Details extends __chunk_1.SectionElement {
+  class Details extends __chunk_2.SectionElement {
       async beforeShow(hostElement, routeData) {
           const { name } = routeData.data;
           if (!name) {
               return;
           }
-          const element = hostElement.querySelector(`[data-name="${name}"]`);
+          const home = hostElement.querySelector('pm-home');
+          if (!home) {
+              return;
+          }
+          const element = home.shadowRoot.querySelector(`[data-name="${name}"]`);
           if (!element) {
               return;
           }
@@ -104,9 +108,12 @@ define("./details-b93a9da5.js",['exports', './chunk-0329137a'], function (export
       async show(hostElement, routeData) {
           const show = super.show(hostElement, routeData);
           if (routeData.data.name) {
-              document.querySelector('h1').textContent = routeData.data.name;
+              this.root.querySelector('h1').textContent = routeData.data.name;
           }
-          const avatar = document.querySelector('img');
+          const avatar = this.root.querySelector('img');
+          if (!avatar) {
+              return;
+          }
           avatar.src = '/static/images/person.jpg';
           if (this.avatarCopy) {
               // 1. Calculate the difference between avatar and copy.
@@ -119,15 +126,14 @@ define("./details-b93a9da5.js",['exports', './chunk-0329137a'], function (export
               this.removeAvatarCopy();
               avatar.style.display = 'block';
           }
-          return await show;
+          return show;
       }
       async hide(hostElement) {
-          const hide = super.hide(hostElement);
           if (this.avatarCopy) {
               await __chunk_1.fade({ el: this.avatarCopy, to: 0, duration: 200 });
               this.removeAvatarCopy();
           }
-          return await hide;
+          return super.hide(hostElement);
       }
       removeAvatarCopy() {
           if (!this.avatarCopy) {
