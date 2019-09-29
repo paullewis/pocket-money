@@ -24,8 +24,10 @@ import { cancelFade, fade } from '../utils/fade.js';
 
 let toastInstance: Toast | undefined;
 
+const TOAST_FADE_TIMEOUT = 4000;
+
 export class Toast extends HTMLElement {
-  static create(message: string) {
+  static create(message: string, target = document.body) {
     if (!toastInstance) {
       toastInstance = new Toast();
     } else {
@@ -33,6 +35,7 @@ export class Toast extends HTMLElement {
     }
 
     toastInstance.textContent = message;
+    target.appendChild(toastInstance);
   }
 
   private readonly root = this.attachShadow({mode: 'open'});
@@ -44,7 +47,7 @@ export class Toast extends HTMLElement {
     this.root.innerHTML = `
       <style>
         #slotted-value {
-          padding: 9px;
+          padding: 12px 16px;
           color: #FFF;
           background: #444;
           box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
@@ -62,6 +65,8 @@ export class Toast extends HTMLElement {
   resetFadeTimeout() {
     cancelFade({ el: this, opacity: 1 });
     clearTimeout(this.fadeIdx);
-    this.fadeIdx = setTimeout(() => fade({ el: this }), 1000) as unknown as number;
+    this.fadeIdx = setTimeout(() => {
+      fade({ el: this, duration: 1000 });
+    }, TOAST_FADE_TIMEOUT) as unknown as number;
   }
 }

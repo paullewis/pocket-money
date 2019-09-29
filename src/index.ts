@@ -20,9 +20,42 @@
  * SOFTWARE.
  */
 
+import { html, render } from 'lit-html';
+import { person } from './model/model.js';
 import { SectionElement } from './utils/section.js';
 
-class Home extends SectionElement {}
+class Home extends SectionElement {
+
+  async show(hostElement: HTMLElement, routeData: {}) {
+    const show = super.show(hostElement, routeData);
+
+    const list = this.root.querySelector('.person-list') as HTMLElement;
+    const persons = await person.getAll();
+
+    let tmpl;
+    if (!persons.length) {
+      tmpl = html`No persons stored.`;
+    } else {
+      tmpl = html`<ul>
+      ${persons.map((personData) => {
+        return html`
+        <li>
+          <a href="/details/${personData.id}/">
+            <img class="avatar" data-name="${personData.id}"
+                src="/static/images/person.jpg" width="300" height="300">
+            ${personData.name}
+          </a>
+        <li>`;
+      })}
+      </ul>`;
+    }
+
+    render(tmpl, list);
+
+    return show;
+  }
+
+}
 
 customElements.define('pm-home', Home);
 

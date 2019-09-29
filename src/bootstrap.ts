@@ -36,16 +36,16 @@ async function init() {
       section: import('./settings/settings.js')
     };
   });
-  Router.register(['/details/', '/details/:name/'], () => {
+  Router.register(['/details/', '/details/:id/'], () => {
     return {
       elements: getHtmlElements('/details/index.html'),
       section: import('./details/details.js')
     };
   });
-  Router.register(['/child-management/', '/child-management/:id/'], () => {
+  Router.register(['/person-management/', '/person-management/:id/'], () => {
     return {
-      elements: getHtmlElements('/child-management/index.html'),
-      section: import('./child-management/child-management.js')
+      elements: getHtmlElements('/person-management/index.html'),
+      section: import('./person-management/person-management.js')
     };
   });
 

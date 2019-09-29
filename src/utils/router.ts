@@ -56,9 +56,18 @@ export async function init(host: HTMLElement) {
   window.addEventListener('popstate', () => go());
 }
 
+export async function home() {
+  history.replaceState(undefined, '', '/');
+  return go();
+}
+
+function getNearestAnchorIfPossible(els: HTMLElement[]) {
+  return els.find((el) => el.tagName === 'A') || els[0];
+}
+
 function hijackLinks() {
   document.body.addEventListener('click', (evt) => {
-    const target = evt.path[0] as HTMLElement;
+    const target = getNearestAnchorIfPossible(evt.path) as HTMLElement;
 
     // 1. Is an anchor.
     if (target.tagName !== 'A') {

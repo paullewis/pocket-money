@@ -25,7 +25,7 @@ import { ease } from './ease.js';
 
 const fades = new Map<HTMLElement, number>();
 const cancels = new WeakMap<HTMLElement, number>();
-export function fade({ el = document.body, from = 1, to = 0, duration = 3000 }): Promise<void> {
+export function fade({ el = document.body, from = 1, to = 0, duration = 300 }): Promise<void> {
   return new Promise((resolve) => {
     const cancelValue = cancels.get(el);
     if (typeof cancelValue !== 'undefined') {
@@ -64,6 +64,10 @@ export function fade({ el = document.body, from = 1, to = 0, duration = 3000 }):
 }
 
 export function cancelFade({ el = document.body, opacity = Number.NaN }) {
+  if (!fades.get(el)) {
+    return;
+  }
+
   if (Number.isNaN(opacity)) {
     opacity = Number(window.getComputedStyle(el).opacity || '0');
   }

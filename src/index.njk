@@ -32,6 +32,21 @@
     img {
       border-radius: 50%;
     }
+
+    ul {
+      padding: 0;
+      margin: 0;
+    }
+
+    li {
+      display: flex;
+      flex-direction: row;
+    }
+
+    li img {
+      width: 48px;
+      height: 48px;
+    }
   </style>
 </head>
 <body>
@@ -40,9 +55,10 @@
   <main>
     <h1>Home</h1>
 
-    <img class="avatar" data-name="james" src="/static/images/person.jpg" width="300" height="300">
+    <div class="person-list">
+    </div>
 
-    <a href="/child-management/foo">Add child</a>
+    <a href="/person-management">Add person</a>
   </main>
 
   <script src="/js/bootstrap.js"></script>

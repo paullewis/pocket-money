@@ -32,16 +32,16 @@
   {% include "nav.njk" %}
 
   <main>
-    <h1>Add child</h1>
+    <h1>Add person</h1>
     <form>
       <fieldset>
-        <label for="child-name">Child's name</label>
-        <input type="text" id="child-name" name="child-name" />
+        <label for="person-name">Name</label>
+        <input required type="text" id="person-name" name="person-name" placeholder="Joe" />
       </fieldset>
 
       <fieldset>
         <label for="pocket-money-rate">How often do they receive pocket money?</label>
-        <select id="pocket-money-rate" name="pocket-money-rate">
+        <select required id="pocket-money-rate" name="pocket-money-rate">
           <option>Weekly</option>
           <option>Monthly</option>
         </select>
@@ -57,17 +57,17 @@
           <option>Friday</option>
         </select>
 
-        <label for="pocket-money-value">How much do they get?</label>
+        <label for="pocket-money-amount">How much do they get?</label>
         <div class="pocket-money-currency-marker">£</div>
-        <input type="text" id="pocket-money-value" name="pocket-money-value" />
+        <input required type="text" id="pocket-money-amount" name="pocket-money-amount" />
 
         <label for="pocket-money-percentage">What percentage are they expected to give away?</label>
-        <input type="text" id="pocket-money-percentage" name="pocket-money-percentage" />
+        <input type="text" id="pocket-money-percentage" name="pocket-money-percentage" value="10" />
         <div class="pocket-money-percentage-marker">%</div>
       </fieldset>
 
       <input type="submit" value="Save" />
-      <input type="hidden" name="child-id" id="child-id" />
+      <input type="hidden" name="person-id" id="person-id" />
     </form>
   </main>
 

@@ -20,28 +20,52 @@
  * SOFTWARE.
  */
 
-import { id } from '../utils/id.js';
-import { SectionElement } from '../utils/section.js';
+import * as IDBKeyval from 'idb-keyval';
 
-interface RouteData {
-  data: {
-    id: string;
-  };
+export enum MoneyRate {
+  WEEKLY = 'Weekly',
+  MONTHLY = 'Monthly'
 }
 
-class ChildManagement extends SectionElement {
-  async show(hostElement: HTMLElement, routeData: RouteData) {
-    const show = super.show(hostElement, routeData);
+export enum MoneyDay {
+  MONDAY = 'Monday',
+  TUESDAY = 'Tuesday',
+  WEDNESDAY = 'Wednesday',
+  THURSDAY = 'Thursday',
+  FRIDAY = 'Friday',
+  SATURDAY = 'Saturday',
+  SUNDAY = 'Sunday'
+}
 
-    const childId = this.root.querySelector('#child-id') as HTMLInputElement;
-    if (!childId.value) {
-      childId.value = routeData.data.id || id();
-    }
+export interface PersonData {
+  id: string;
+  name: string;
+  rate: MoneyRate;
+  day?: MoneyDay;
+  amount: number;
+  giving?: number;
+  image?: Blob;
+}
 
-    return show;
+export const person = {
+  create(personData: PersonData) {
+    return IDBKeyval.set(personData.id, personData);
+  },
+
+  retrieve(id: string): Promise<PersonData | undefined> {
+    return IDBKeyval.get(id);
+  },
+
+  update(personData: PersonData) {
+    return IDBKeyval.set(personData.id, personData);
+  },
+
+  del(id: string) {
+    return IDBKeyval.del(id);
+  },
+
+  async getAll(): Promise<PersonData[]> {
+    const keys = await IDBKeyval.keys();
+    return await Promise.all(keys.map((key) => IDBKeyval.get(key)));
   }
-}
-
-customElements.define('pm-child', ChildManagement);
-
-export default new ChildManagement();
+};

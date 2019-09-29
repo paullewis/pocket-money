@@ -20,42 +20,49 @@
  * SOFTWARE.
  */
 
+import { Toast } from '../components/toast.js';
+import { person, PersonData } from '../model/model.js';
 import { fade } from '../utils/fade.js';
 import { move } from '../utils/move.js';
+import * as Router from '../utils/router.js';
 import { SectionElement } from '../utils/section.js';
 
 interface RouteData {
   data: {
-    name?: string
+    id?: string
   };
 }
 
 class Details extends SectionElement {
   protected mainSource!: HTMLElement;
+  private personData!: PersonData | undefined;
   private avatarCopy?: HTMLImageElement;
 
   async beforeShow(hostElement: HTMLElement, routeData: RouteData) {
-    const { name } = routeData.data;
-    if (!name) {
+    const { id } = routeData.data;
+    if (!id) {
       return;
     }
 
+    this.personData = await person.retrieve(id);
     const home = hostElement.querySelector('pm-home') as HTMLElement;
     if (!home) {
       return;
     }
 
-    const element = home.shadowRoot!.querySelector(`[data-name="${name}"]`);
+    const element = home.shadowRoot!.querySelector(`[data-name="${id}"]`);
     if (!element) {
       return;
     }
 
     // Copy the image for the view transition.
     this.avatarCopy = element.cloneNode(true) as HTMLImageElement;
-    const { left, top } = element.getBoundingClientRect();
+    const { left, top, width, height } = element.getBoundingClientRect();
     this.avatarCopy.style.position = 'fixed';
     this.avatarCopy.style.left = `${left}px`;
     this.avatarCopy.style.top = `${top}px`;
+    this.avatarCopy.style.width = `${width}px`;
+    this.avatarCopy.style.height = `${height}px`;
 
     document.body.appendChild(this.avatarCopy);
   }
@@ -63,9 +70,13 @@ class Details extends SectionElement {
   async show(hostElement: HTMLElement, routeData: RouteData) {
     const show = super.show(hostElement, routeData);
 
-    if (routeData.data.name) {
-      this.root.querySelector('h1')!.textContent = routeData.data.name;
+    if (!this.personData) {
+      Toast.create('🔍 Unable to find person.');
+      Router.home();
+      return;
     }
+
+    this.root.querySelector('h1')!.textContent = this.personData.name;
 
     const avatar = this.root.querySelector('img');
     if (!avatar) {
