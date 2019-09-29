@@ -20,9 +20,33 @@
  * SOFTWARE.
  */
 
+import { person } from '../model/model.js';
 import { SectionElement } from '../utils/section.js';
 
-class Settings extends SectionElement {}
+class Settings extends SectionElement {
+
+  async show(hostElement: HTMLElement) {
+    const show = super.show(hostElement, {});
+
+    const clear = this.root.querySelector('#clear') as HTMLButtonElement;
+
+    let isClearing = false;
+    clear.addEventListener('click', async () => {
+      if (isClearing) {
+        return;
+      }
+
+      if (confirm('Are you sure you want to clear all data? This cannot be undone.')) {
+        isClearing = true;
+        await person.clear();
+        isClearing = false;
+        alert('All cleared');
+      }
+    });
+
+    return show;
+  }
+}
 
 customElements.define('pm-settings', Settings);
 

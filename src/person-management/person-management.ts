@@ -149,13 +149,15 @@ class PersonManagement extends SectionElement {
       case 'Weekly': rateValue = MoneyRate.WEEKLY; break;
     }
 
+    const transactions = this.personData ? this.personData.transactions : [];
     this.personData = {
       amount: Number(amount.value),
       day: dayValue,
       giving: Number(giving.value),
       id: personId.value,
       name: personName.value,
-      rate: rateValue
+      rate: rateValue,
+      transactions
     };
 
     if (this.isEdit) {

@@ -37,6 +37,10 @@ export enum MoneyDay {
   SUNDAY = 'Sunday'
 }
 
+export interface PersonTransaction {
+  date: Date;
+}
+
 export interface PersonData {
   id: string;
   name: string;
@@ -45,6 +49,7 @@ export interface PersonData {
   amount: number;
   giving?: number;
   image?: Blob;
+  transactions: PersonTransaction[];
 }
 
 export const person = {
@@ -67,5 +72,9 @@ export const person = {
   async getAll(): Promise<PersonData[]> {
     const keys = await IDBKeyval.keys();
     return await Promise.all(keys.map((key) => IDBKeyval.get(key)));
+  },
+
+  clear() {
+    return IDBKeyval.clear();
   }
 };
